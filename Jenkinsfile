@@ -12,11 +12,11 @@ pipeline {
         }
 
         stage('Build') {
-            steps {
-                echo 'Building Spring Boot application...'
-                sh './mvnw clean package -DskipTests'
-            }
-        }
+    steps {
+        echo 'Building Spring Boot application...'
+        sh './mvnw clean package -Dmaven.test.skip=true'
+    }
+}
 
         stage('Test') {
             steps {
