@@ -4,7 +4,6 @@ pipeline {
 
     stages {
 
-        // Stage 1: Checkout source code
         stage('Checkout') {
             steps {
                 echo 'Checking out source code from GitHub...'
@@ -12,7 +11,6 @@ pipeline {
             }
         }
 
-        // Stage 2: Build Spring Boot application
         stage('Build') {
             steps {
                 echo 'Building Spring Boot application...'
@@ -20,7 +18,6 @@ pipeline {
             }
         }
 
-        // Stage 3: Build Docker image
         stage('Docker Build') {
             steps {
                 echo 'Building Docker image...'
@@ -28,33 +25,26 @@ pipeline {
             }
         }
 
-        // Stage 4: Push Docker image to Docker Hub
         stage('Docker Push') {
             steps {
                 echo 'Pushing Docker image to Docker Hub...'
 
-                withCredentials([
-                    usernamePassword(
-                        credentialsId: 'dockerhub-credentials',
-                        usernameVariable: 'abhiksha4552',
-                        passwordVariable: 'Abhi@2004'
-                    )
-                ]) {
-                    sh '''
-                        set -eu
-
-                        echo "Abhi@2004" | docker login \
-                            --username "abhiksha4552" \
-                            --password-stdin
-
-                        docker tag 14_userservice:latest \
-                            "abhiksha4552/14_userservice:latest"
-
-                        docker push "abhiksha4552/14_userservice:latest"
-
-                        docker logout
-                    '''
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'abhiksha4552', passwordVariable: 'Abhi@2004')]) {
+                    sh 'echo "Abhi@2004" | docker login --username "abhiksha4552" --password-stdin'
+                    sh 'docker tag 14_userservice:latest "abhiksha4552/14_userservice:latest"'
+                    sh 'docker push "abhiksha4552/14_userservice:latest"'
+                    sh 'docker logout'
                 }
+            }
+        }
+
+        stage('Deploy to EC2') {
+            steps {
+                echo 'Deploying User Service on EC2...'
+                sh 'docker pull abhiksha4552/14_userservice:latest'
+                sh 'docker rm -f user-service || true'
+                sh 'docker run -d --name user-service --restart unless-stopped -p 8081:8080 abhiksha4552/14_userservice:latest'
+                sh 'docker ps --filter name=user-service'
             }
         }
     }
@@ -62,7 +52,7 @@ pipeline {
     post {
         success {
             echo 'CI/CD pipeline completed successfully!'
-            echo 'Docker image pushed to Docker Hub.'
+            echo 'Docker image pushed and deployment stage completed.'
         }
 
         failure {
