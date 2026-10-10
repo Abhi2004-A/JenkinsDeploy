@@ -43,14 +43,14 @@ pipeline {
                     sh '''
                         set -eu
 
-                        echo "$DOCKER_PASS" | docker login \
-                            --username "$DOCKER_USER" \
+                        echo "Abhi@2004" | docker login \
+                            --username "abhiksha4552" \
                             --password-stdin
 
                         docker tag 14_userservice:latest \
-                            "$DOCKER_USER/14_userservice:latest"
+                            "abhiksha4552/14_userservice:latest"
 
-                        docker push "$DOCKER_USER/14_userservice:latest"
+                        docker push "abhiksha4552/14_userservice:latest"
 
                         docker logout
                     '''
