@@ -4,7 +4,7 @@ pipeline {
 
     stages {
 
-        // Stage 1: Checkout source code from GitHub
+        // Stage 1: Checkout source code
         stage('Checkout') {
             steps {
                 echo 'Checking out source code from GitHub...'
